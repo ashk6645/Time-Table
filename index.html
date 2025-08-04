@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultimate Student Timetable Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-calendar-alt"></i> Ultimate Timetable Manager</h1>
+                <div class="header-controls">
+                    <button class="btn btn-primary" onclick="openAddClassModal()">
+                        <i class="fas fa-plus"></i> Add Class
+                    </button>
+                    <div class="view-toggle">
+                        <button class="btn btn-secondary active" onclick="switchView('daily')" id="dailyBtn">
+                            <i class="fas fa-calendar-day"></i> Daily
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchView('weekly')" id="weeklyBtn">
+                            <i class="fas fa-calendar-week"></i> Weekly
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="navigation">
+            <div class="date-navigation">
+                <button class="nav-btn" onclick="navigateDate(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="current-date" id="currentDate"></div>
+                <button class="nav-btn" onclick="navigateDate(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <button class="btn btn-outline" onclick="goToToday()">
+                <i class="fas fa-home"></i> Today
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Daily View -->
+            <div class="view-container" id="dailyView">
+                <div class="daily-schedule">
+                    <div class="time-slots" id="timeSlots"></div>
+                    <div class="schedule-grid" id="scheduleGrid"></div>
+                </div>
+            </div>
+
+            <!-- Weekly View -->
+            <div class="view-container hidden" id="weeklyView">
+                <div class="weekly-schedule">
+                    <div class="week-header" id="weekHeader"></div>
+                    <div class="week-grid" id="weekGrid"></div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Statistics Panel -->
+        <aside class="stats-panel">
+            <h3><i class="fas fa-chart-bar"></i> Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number" id="totalClasses">0</span>
+                    <span class="stat-label">Total Classes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="todayClasses">0</span>
+                    <span class="stat-label">Today's Classes</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="weeklyHours">0</span>
+                    <span class="stat-label">Weekly Hours</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="nextClass">--</span>
+                    <span class="stat-label">Next Class</span>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Add/Edit Class Modal -->
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add New Class</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <form id="classForm">
+                <div class="form-group">
+                    <label for="className">Class Name*</label>
+                    <input type="text" id="className" required>
+                </div>
+                <div class="form-group">
+                    <label for="instructor">Instructor</label>
+                    <input type="text" id="instructor">
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dayOfWeek">Day*</label>
+                        <select id="dayOfWeek" required>
+                            <option value="monday">Monday</option>
+                            <option value="tuesday">Tuesday</option>
+                            <option value="wednesday">Wednesday</option>
+                            <option value="thursday">Thursday</option>
+                            <option value="friday">Friday</option>
+                            <option value="saturday">Saturday</option>
+                            <option value="sunday">Sunday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="classColor">Color</label>
+                        <input type="color" id="classColor" value="#4CAF50">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="startTime">Start Time*</label>
+                        <input type="time" id="startTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="endTime">End Time*</label>
+                        <input type="time" id="endTime" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Class</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Class Details Modal -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Class Details</h2>
+                <button class="close-btn" onclick="closeDetailsModal()">&times;</button>
+            </div>
+            <div class="class-details" id="classDetails"></div>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeDetailsModal()">Close</button>
+                <button class="btn btn-primary" onclick="editClass()">Edit</button>
+                <button class="btn btn-danger" onclick="deleteClass()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Container -->
+    <div class="notification-container" id="notifications"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
