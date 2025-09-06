@@ -126,4 +126,4 @@ Learn more: https://choosealicense.com/
 
 - @ashk6645
 
-If this project helps you, consider starring the repo!
+If this project helps you, consider ⭐️ starring the repo!
